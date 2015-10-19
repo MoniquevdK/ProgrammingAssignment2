@@ -1,121 +1,51 @@
-## Put comments here that give an overall description of what your
-## functions do
+## This script consists of two functions that cache the inverse of a matrix, such that it doesn't 
+## need to be calculated repeatedly
 
-## Write a short comment describing this function
+## The first function creates a special matrix object that can cache its inverse. For this purpose, 
+## it needs a squared matrix that could be inverted as argument. First the object "inv" is created. 
+## The function then involves a nested function "set", which is able to overwrite the matrix x with 
+## the values of a different matrix, y (from outside the function). The object "get" can be called 
+## to show the values of the matrix x. Object "setinv" can be called to assign values of the inverse 
+## of the matrix (from outside) to "inv". "getinv" can be called to show the values of the inverse 
+## of matrix x. 
 
 makeCacheMatrix <- function(x = matrix()) {
-  inv <- NULL # inverse moet nog berekend worden
-  set <- function(y) { # om matrix x evt te overschrijven met nieuwe data
-    x <<- y # matrix x wordt overschreven met matrix y van buitenaf
-    inv <<- NULL # inv moet (opnieuw) berekend worden
+  inv <- NULL 
+  set <- function(y) { 
+    x <<- y 
+    inv <<- NULL 
   }
-  get <- function() x # kun je aanroepen om matrix x te kunnen zien
-  setinv <- function(inverse) inv <<- solve # geef evt een waarde van inv van buitenaf
-  getinv <- function() inv # laat zien wat inv is
+  get <- function() x
+  setinv <- function(solve) inv <<- solve
+  getinv <- function() inv 
   list(set = set, get = get,
        setinv = setinv,
        getinv = getinv)
 }
 
-a <- makeCacheMatrix(matrix(sample(1:20,9),3,3))
-a$get()
-a$getinv()
+# Below on line 26 an example with an invertible matrix:
+# a <- makeCacheMatrix(matrix(sample(1:20,9),3,3))
 
 
+## The second function computes the inverse of the special matrix returned by makeCacheMatrix above. 
+## If the inverse has already been calculated (and the matrix has not changed), then the function 
+## cacheSolve retrieves the inverse from the cache. The function uses the first function as argument 
+## and first looks if the inverse for this matrix has already been calculated. If it was already 
+## calculated, the function retrieves the inverse from the cashe and returns the message "getting 
+## cashed data" together with the retrieved inverse. Otherwise the function calculates the inverse
+## of the matrix x and in the end returns it. 
 
-## Write a short comment describing this function
 
 cacheSolve <- function(x, ...) {
-  inv <- x$getinv() # bekijk of er een een waarde van m aanwezig en zo ja wat deze dan is
-  if(!is.null(inv)) { # indien er al een waarde is
-    message("getting cached data") # geef dan deze tekst weer
-    return(inv) # en ook de waarde van m
+  inv <- x$getinv() 
+  if(!is.null(inv)) { 
+    message("getting cached data") 
+    return(inv) 
   }
-  data <- x$get() # bekijk de vector 
-  inv <- solve(data, ...) # bereken de mean van vector x
-  x$setinv(inv) #  # geef berekende waarde van m aan x
+  data <- x$get() 
+  inv <- solve(data, ...) 
+  x$setinv(inv) 
   inv
-        ## Return a matrix that is the inverse of 'x'
 }
 
-cacheSolve(a)
-a$getinv()  # this is only to show you that the mean has been stored and does not affect anything
-cachemean(a)
-a$set(c(10,20,30,40))
-a$getinv()
-cachemean(a)
-cachemean(a)
-a$get()
-a$setmean(0)  # do NOT call setmean() directly despite it being accessible for the reason you will see next
-a$getmean()
-a$get()
-cachemean(a)  # as you can see the call to setmean() effectively corrupted the functioning of the code
-a <- makeVector(c(5, 25, 125, 625))
-a$get()
-cachemean(a)
-cachemean(a)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#example
-makeVector <- function(x = numeric()) {
-  m <- NULL # mean moet nog berekend worden
-  set <- function(y) { # om vector x evt te overschrijven met nieuwe data
-    x <<- y # vector x wordt overschreven met vector y van buitenaf
-    m <<- NULL # mean moet (opnieuw) berekend worden
-  }
-  get <- function() x # kun je aanroepen om vector x te kunnen zien
-  setmean <- function(mean) m <<- mean # geef evt een waarde van mean m van buitenaf
-  getmean <- function() m # laat zien wat mean m is
-  list(set = set, get = get,
-       setmean = setmean,
-       getmean = getmean)
-}
-
-
-a <- makeVector(1:4)
-a$get()
-a$getmean()
-
-
-cachemean <- function(x, ...) {
-  m <- x$getmean() # bekijk of er een een waarde van m aanwezig en zo ja wat deze dan is
-  if(!is.null(m)) { # indien er al een waarde is
-    message("getting cached data") # geef dan deze tekst weer
-    return(m) # en ook de waarde van m
-  }
-  data <- x$get() # bekijk de vector 
-  m <- mean(data, ...) # bereken de mean van vector x
-  x$setmean(m) #  # geef berekende waarde van m aan x
-  m
-}
-
-
-cachemean(a)
-a$getmean()  # this is only to show you that the mean has been stored and does not affect anything
-cachemean(a)
-a$set(c(10,20,30,40))
-a$getmean()
-cachemean(a)
-cachemean(a)
-a$get()
-a$setmean(0)  # do NOT call setmean() directly despite it being accessible for the reason you will see next
-a$getmean()
-a$get()
-cachemean(a)  # as you can see the call to setmean() effectively corrupted the functioning of the code
-a <- makeVector(c(5, 25, 125, 625))
-a$get()
-cachemean(a)
-cachemean(a)
+# cacheSolve(a)
